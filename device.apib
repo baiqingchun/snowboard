@@ -1,0 +1,259 @@
+# Group device
+
+## Device [/api/device/{deviceId}]
+
++ Parameters
+  + deviceId: pico1 (string) - Device 的 ID
+
+### 获取 Device Info [GET]
+
++ Response 200 (application/json; charset=utf-8)
+  + Attributes (DeviceReturn)
+
+### Device 上线 [POST]
+
+设备接入电源时调用，之后设备会连接到 socket.io，并通过 socket.io 来通讯。
+
++ Response 200 (application/json; charset=utf-8)
+  + Attributes (DeviceReturn)
+
+### 删除 Device [DELETE]
+
+Token 必须是 admin
+
++ Response 200 (application/json; charset=utf-8)
+  + Attributes (PassReturn)
+
+## Setup Device [/api/device/{deviceFingerprint}/setup]
+
++ Parameters
+  + deviceFingerprint: abcdefgj72haj (string) - Device 的 android ID (temp)
+
+### Device 注册到服务器 [POST]
+
+目前直接 active，以后可能会一启动是 inactive 的状态
+
++ Response 200 (application/json; charset=utf-8)
+  + Attributes (DeviceReturn)
+
+
+
+## Active Device [/api/device/{deviceId}/active{?token}]
+
++ Parameters
+  + deviceId: pico1 (string) - Device 的 ID
+  + token: WYGHS267323WHDJWH (string) - Admin token who register the device
+
+### Active [PUT]
+
++ Response 200 (application/json; charset=utf-8)
+  + Attributes (PassReturn)
+
+### Inactive [DELETE]
+
++ Response 200 (application/json; charset=utf-8)
+  + Attributes (PassReturn)
+
+
+## Devices [/api/devices/{deviceType}{?token,owner,page,code}]
+
+### List devices [GET]
+
++ Parameters
+  + deviceType: near (string, optional) - Type of devices (near)
+
+  + token: WYGHS267323WHDJWH (string) - User token
+  + owner: 1234567890 (string, optional) - Owner ID of device shown
+  + page: 1 (string, optional) - Page of devices shown
+  + code (string, optional) - Checksum of device (length 6)
+
++ Response 200 (application/json; charset=utf-8)
+  + Attributes (DevicesReturn)
+
+
+## Bind device [/api/device/{deviceId}/bind/{userId}{?token}]
+
++ Parameters
+ + token: WYGHS267323WHDJWH (string) - Controller token (admin)
+ + deviceId: pico1 (string) - Device ID
+ + userId: 18200000291 (string) - User Id to bind
+
+### Bind device to iPhone [POST]
+
+手机绑定 PICO。绑定成功后：
+
+1，手机作为 device 的 owner；
+
+2，手机加入 device 的 room；
+
+3，后台向 Room 发送 video list；
+
++ Response 200 (application/json; charset=utf-8)
+ + Attributes (PassReturn)
+
+
+## Unbind device [/api/device/{deviceId}/unbind{?token}]
+
++ Parameters
+ + token: WYGHS267323WHDJWH (string) - User token
+ + deviceId: pico1 (string) - Device ID
+
+### Unbind device [POST]
+
+手机解绑 PICO。解绑成功后：
+
+1，手机不再是 device 的 owner；
+
+2，手机退出 device 的 room；
+
+3，后台向 Room 发送 video clear；
+
++ Response 200 (application/json; charset=utf-8)
+ + Attributes (PassReturn)
+
+## Bound devices [/api/device_bound{?token}]
+
++ Parameters
+ + token: WYGHS267323WHDJWH (string) - User token
+
+### List bound devices [GET]
+
+列出所有绑定在本用户上的设备
+
++ Response 200 (application/json; charset=utf-8)
+  + Attributes (DevicesReturn)
+
+
+## Room [/api/room/{roomId}{?token}]
+
++ Parameters
+ + token: WYGHS267323WHDJWH (string) - User token
+ + roomId: uhhjfe73jsf (string, optional) - Room ID，缺省为 User 所在的 room
+
+### 获取room [GET]
+
+roomId 为空时，默认为用户所在的room
+
++ Response 200 (application/json; charset=utf-8)
+ + Attributes (RoomReturn)
+
+
+### 加入room [POST]
+
+同时会把名下的 device 也加入这个房间
+（当 roomId 为空时，表示退回自己的房间）
+
++ Response 200 (application/json; charset=utf-8)
+ + Attributes (RoomReturn)
+
+
+## Rooms [/api/rooms{?token,page,filter,owner}]
+
+### List rooms [GET]
+
++ Parameters
+  + token: WYGHS267323WHDJWH (string) - User token
+  + page: 1 (string, optional) - Page of room shown
+  + filter: a (string, optional) - Filter of id shown
+  + owner: 12300023819 (string, optional) - Filter of owner
+
++ Response 200 (application/json; charset=utf-8)
+  + Attributes (RoomsReturn)
+
+
+## User_Room [/api/user_room/{uid}{?token,size}]
+
++ Parameters
+ + message: play_video1 (string) - 发送的信息
+ + token: WYGHS267323WHDJWH (string) - User token
+ + size: 5 (number) - Room size
+
+### Open a user room [PUT]
+
+给User开启一个房间
+可以给自己开启一个一格的房间，admin可给所有人开房间(默认5)
+
++ Response 200 (application/json; charset=utf-8)
+ + Attributes (PassReturn)
+
+
+### Close a user room [DELETE]
+
+关闭User的房间，必须是 admin
+
++ Response 200 (application/json; charset=utf-8)
+ + Attributes (PassReturn)
+
+
+## Room message [/api/room_msg/{message}{?token}]
+
++ Parameters
+ + message: play_video1 (string) - 发送的信息
+ + token: WYGHS267323WHDJWH (string) - User token
+
+### Send message to room [POST]
+
+手机发送信息给它所在的room，比如：
+聊天信息，
+或者让这个room中的设备都去看某视频 (需要是 room owner)
+
++ Response 200 (application/json; charset=utf-8)
+ + Attributes (PassReturn)
+
+
+
+# Data Structures
+## Device (object)
++ _id: ahjiw7yur37iuw (string) - Device ID
++ roomId: aeb04151969e58a19618bf074282ac7d92b6b165 (string) - Current Room Address
++ privateRoomId: aeb04151969e58a19618bf074282ac7d92b6b165 (string) - My Private Room Address
++ owner_userId: 18600028197 (string) - Owner 用户 ID, 可以为空表示没有绑定
++ actived: 1 (string) - 是否已经激活,0: Inactive, 1: Actived
++ ip3: 203.12.33.0 (string) - Masked IP last login
++ checksum: jfh29i (string) - 设备校验码
++ lastUpdate: 2017/03/04T03:02:01 (string) - 最后更新时间
+
+## DeviceReturn (object)
++ code: 200 (string) - 返回值
++ message: OK (string) - 返回消息
++ data (Device) - 返回数据
+
+## DevicesReturn (object)
++ code: 200 (string) - 返回值
++ message: OK (string) - 返回消息
++ data (PageDevices) - 返回数据
+
+## PageDevices (object)
++ devices (array[Device]) - 当前返回
++ total: 1 (number) - 总数
+
+## FailReturn (object)
++ code: 400 (string)
++ message: Invalid data (string)
+
+## PassReturn (object)
++ code: 200 (string)
++ message: OK (string)
+
+
+## Room (object)
++ id: pico1 (string) - Device ID with server prefix
++ deviceCount: 2 (string) - Current Room Address
++ deviceCountLimit: 5 (string) - My Private Room Address
++ owner_userId: 18600028197 (string) - Owner 用户 ID, 可以为空表示没有绑定
++ lastUpdate: 2017/08/12Z08:06 (string) - 心跳时间，如果超过10分钟没有收到心跳，表示里面已经没有活着的设备了，可以关闭
++ status: 0 (number) - Socket.io 状态，0: 未开启，1: 已启动
+
+## RoomReturn (object)
++ code: 200 (string) - 返回值
++ message: OK (string) - 返回消息
++ data (Room) - 返回数据
+
+## RoomsReturn (object)
++ code: 200 (string) - 返回值
++ message: OK (string) - 返回消息
++ data (PageRooms) - 返回数据
+
+## PageRooms (object)
++ rooms (array[Room]) - 当前返回
++ total: 1 (number) - 总数

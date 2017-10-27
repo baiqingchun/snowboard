@@ -1,0 +1,48 @@
+#RECORORDS
+## ViewRecords [/api/vrecords/{productId}?{token}]
+
++ Parameters
+  + token: WYGHS267323WHDJWH (string) - User token
+  + productId: 1 (string, optional) - Page of room shown
++ Bodys
+  + token: WYGHS267323WHDJWH (string) - User token
+  + page: 1 (string, optional) - Page of room shown
+### Get ViewRecords [GET]
+
+列出所有的观看记录
+
++ Response 200 (application/json; charset=utf-8)
+  + Attributes (ViewRecordsReturn)
+
+
+
+
+# Data Structures
+## ViewRecord (object)
++ deviceId: 378237902 (string)
++ videoId: video1 (string)
++ timeStart: 5 (number) - 从第几秒开始记录
++ timeEnd: 20 (number) - 记录到第几秒
++ records: JSFHUW (string) - 记录本身，为bytes的Base64
+
+## ViewRecordReturn (object)
++ code: 200 (string) - 返回值
++ message: OK (string) - 返回消息
++ data (ViewRecord) - 返回数据
+
+## ViewRecordsReturn (object)
++ code: 200 (string) - 返回值
++ message: OK (string) - 返回消息
++ data (ViewRecords) - 返回数据
+
+## ViewRecords (object)
++ records (array[ViewRecord]) - 当前返回
++ total: 1 (number) - 总数
+
+## FailReturn (object)
++ code: 400 (string)
++ message: Invalid data (string)
+
+## PassReturn (object)
++ code: 200 (string)
++ message: OK (string)
